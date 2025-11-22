@@ -17,8 +17,30 @@ jobs:
         with:
           channel: 'stable'
 
+      - name: Cache Flutter Pub
+        uses: actions/cache@v4
+        with:
+          path: ~/.pub-cache
+          key: ${{ runner.os }}-pub-${{ hashFiles('**/pubspec.yaml') }}
+
+      - name: Cache Gradle
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+            ~/.gradle/daemon
+            .gradle
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/build.gradle.kts') }}
+
       - name: install dependencies
         run: flutter pub get
+
+      - name: flutter analysis
+        run: flutter analyze
+
+      - name: flutter test
+        run: flutter test
 
       - name: build app
         run: flutter build apk --release
@@ -29,6 +51,13 @@ jobs:
           name: alex_counter_app.apk
           path: build/app/outputs/flutter-apk/app-release.apk
 
-
+      - name: Upload to Firebase App Distribution
+        uses: wzieba/Firebase-Distribution-Github-Action@v1
+        with:
+          appId: ${{ secrets.FIREBASE_APP_ID }}
+          token: ${{ secrets.FIREBASE_TOKEN }}
+          file: build/app/outputs/flutter-apk/app-release.apk
+          groups: testers
+          releaseNotes: "CI build from ${{ github.ref }} - run ${{ github.run_id }}"
 
 
