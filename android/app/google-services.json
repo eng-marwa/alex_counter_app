@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "172705658768",
+    "project_id": "alex-counter-app",
+    "storage_bucket": "alex-counter-app.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:172705658768:android:15badf852fe58a433d2515",
+        "android_client_info": {
+          "package_name": "com.depi.eg.alex_counter_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAWynKKfTYWK6VCFx0aRz8ykPkVevYKtLo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
