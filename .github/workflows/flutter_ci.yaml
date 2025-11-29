@@ -9,20 +9,24 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # download project
       - name: code checkout
         uses: actions/checkout@v4
 
+      # setup flutter
       - name: setup flutter
         uses: subosito/flutter-action@v2
         with:
           channel: 'stable'
 
+      # caching pub packages
       - name: Cache Flutter Pub
         uses: actions/cache@v4
         with:
           path: ~/.pub-cache
           key: ${{ runner.os }}-pub-${{ hashFiles('**/pubspec.yaml') }}
 
+      # caching gradle
       - name: Cache Gradle
         uses: actions/cache@v4
         with:
@@ -33,24 +37,49 @@ jobs:
             .gradle
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/build.gradle.kts') }}
 
+      # install dependencies
       - name: install dependencies
         run: flutter pub get
 
+      # flutter analysis & test
       - name: flutter analysis
         run: flutter analyze
 
       - name: flutter test
         run: flutter test
 
+      # decode keystore
+      - name: Decode keystore and create key properties
+        run: |
+          mkdir -p android/app
+          printf "%s" "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > android/app/upload-keystore.jks
+
+      # create key properties
+      - name: Create key properties
+        run: |
+          "echo 'storePassword=${{ secrets.KEYSTORE_PASSWORD }}' >> android/app/key.properties"
+          "echo 'keyAlias=${{ secrets.KEY_ALIAS }}' >> android/app/key.properties"
+          "echo 'keyPassword=${{ secrets.KEY_PASSWORD }}' >> android/app/key.properties"
+          "echo 'storeType=jks' >> android/app/key.properties"
+          "echo 'storeFile=app/key.jks' >> android/app/key.properties"
+
+      # build release apk
       - name: build app
         run: flutter build apk --release
 
+        #build aab bundle
+      - name: build AAB
+        run: flutter build appbundle --release
+
+
+        # upload apk
       - name: upload
         uses: actions/upload-artifact@v4
         with:
           name: alex_counter_app.apk
           path: build/app/outputs/flutter-apk/app-release.apk
 
+      # upload to firebase app distribution
       - name: Upload to Firebase App Distribution
         uses: wzieba/Firebase-Distribution-Github-Action@v1
         with:
@@ -59,5 +88,24 @@ jobs:
           file: build/app/outputs/flutter-apk/app-release.apk
           groups: testers
           releaseNotes: "CI build from ${{ github.ref }} - run ${{ github.run_id }}"
+
+      # upload to google play
+      - name: Upload to Google Play
+        uses: r0adkll/upload-google-play@v1
+        with:
+          keystore: android/app/upload-keystore.jks
+          keystore_password: ${{ secrets.KEYSTORE_PASSWORD }}
+          key_alias: ${{ secrets.KEY_ALIAS }}
+          key_password: ${{ secrets.KEY_PASSWORD }}
+          releaseFiles: build/app/outputs/flutter-apk/app-release.aab
+          serviceAccountJson: ${{ secrets.PLAY_SERVICE_ACCOUNT_JSON }}
+          track: internal
+          status: completed
+          packageName: ${{ secrets.PLAY_PACKAGE_NAME }}
+          waitForProcessing: true
+
+
+
+
 
 
