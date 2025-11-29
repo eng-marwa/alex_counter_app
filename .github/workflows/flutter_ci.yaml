@@ -105,7 +105,6 @@ jobs:
           track: internal
           status: completed
           packageName: ${{ secrets.PLAY_PACKAGE_NAME }}
-          waitForProcessing: true
 
 
 
