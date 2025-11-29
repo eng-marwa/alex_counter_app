@@ -93,10 +93,6 @@ jobs:
       - name: Upload to Google Play
         uses: r0adkll/upload-google-play@v1
         with:
-          keystore: android/app/upload-keystore.jks
-          keystore_password: ${{ secrets.KEYSTORE_PASSWORD }}
-          key_alias: ${{ secrets.KEY_ALIAS }}
-          key_password: ${{ secrets.KEY_PASSWORD }}
           releaseFiles: build/app/outputs/flutter-apk/app-release.aab
           serviceAccountJson: ${{ secrets.PLAY_SERVICE_ACCOUNT_JSON }}
           track: internal
