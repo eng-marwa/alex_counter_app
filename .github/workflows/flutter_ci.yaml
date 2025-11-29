@@ -101,7 +101,7 @@ jobs:
         uses: r0adkll/upload-google-play@v1
         with:
           releaseFiles: build/app/outputs/bundle/release/app-release.aab
-          serviceAccountJson: ${{ secrets.PLAY_SERVICE_ACCOUNT_JSON }}
+          serviceAccountJsonPlainText: ${{ secrets.PLAY_SERVICE_ACCOUNT_JSON }}
           track: internal
           status: completed
           packageName: ${{ secrets.PLAY_PACKAGE_NAME }}
