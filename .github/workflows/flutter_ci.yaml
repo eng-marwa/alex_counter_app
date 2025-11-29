@@ -57,11 +57,11 @@ jobs:
       # create key properties
       - name: Create key properties
         run: |
-          "echo 'storePassword=${{ secrets.KEYSTORE_PASSWORD }}' >> android/app/key.properties"
-          "echo 'keyAlias=${{ secrets.KEY_ALIAS }}' >> android/app/key.properties"
-          "echo 'keyPassword=${{ secrets.KEY_PASSWORD }}' >> android/app/key.properties"
-          "echo 'storeType=jks' >> android/app/key.properties"
-          "echo 'storeFile=app/key.jks' >> android/app/key.properties"
+          printf 'storePassword=${{ secrets.KEYSTORE_PASSWORD }}' >> android/app/key.properties
+          printf 'keyAlias=${{ secrets.KEY_ALIAS }}' >> android/app/key.properties
+          printf 'keyPassword=${{ secrets.KEY_PASSWORD }}' >> android/app/key.properties
+          printf 'storeType=jks' >> android/app/key.properties
+          printf 'storeFile=app/key.jks' >> android/app/key.properties
 
       # build release apk
       - name: build app
